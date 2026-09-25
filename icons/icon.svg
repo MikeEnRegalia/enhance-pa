@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Enhance-PA: a forum speech bubble on a deep purple tile, with a crescent moon cut out of it for the
+       dark mode. An original design -- not ProgArchives' logo. icon-16.svg is the same redrawn for
+       16px; the PNGs beside them are rendered from the two. -->
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5a2a78"/>
+      <stop offset="1" stop-color="#2b0f3d"/>
+    </linearGradient>
+    <mask id="moon">
+      <rect width="128" height="128" fill="#fff"/>
+      <!-- the crescent: a disc, less the same disc shifted up and to the right -->
+      <circle cx="61" cy="55" r="21" fill="#000"/>
+      <circle cx="72" cy="46" r="18" fill="#fff"/>
+    </mask>
+  </defs>
+  <rect x="4" y="4" width="120" height="120" rx="26" fill="url(#tile)"/>
+  <path mask="url(#moon)" fill="#ffcc33"
+        d="M28 26 H100 A12 12 0 0 1 112 38 V78 A12 12 0 0 1 100 90 H56 L34 108 L38 90 H28 A12 12 0 0 1 16 78 V38 A12 12 0 0 1 28 26 Z"/>
+</svg>

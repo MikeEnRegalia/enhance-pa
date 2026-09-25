@@ -1,0 +1,15 @@
+{
+  "name": "enhance-pa",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A dark mode and a more readable style for the ProgArchives.com forum, as a browser extension",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "lint": "web-ext lint --ignore-files test store 'icons/*.svg' README.md package.json package-lock.json",
+    "build": "web-ext build --ignore-files test store 'icons/*.svg' README.md package.json package-lock.json --artifacts-dir dist --overwrite-dest"
+  },
+  "devDependencies": {
+    "jsdom": "^27.0.0",
+    "web-ext": "^10.7.0"
+  }
+}
