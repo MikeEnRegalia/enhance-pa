@@ -2,6 +2,7 @@
   "name": "enhance-pa",
   "version": "1.0.0",
   "private": true,
+  "license": "Apache-2.0",
   "description": "A dark mode and a more readable style for the ProgArchives.com forum, as a browser extension",
   "scripts": {
     "test": "node --test test/*.test.mjs",

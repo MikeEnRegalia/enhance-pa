@@ -87,3 +87,7 @@ Firefox also takes uploads from the command line, with API credentials from the 
 npx web-ext sign --ignore-files test store 'icons/*.svg' README.md package.json package-lock.json \
   --channel listed --api-key "$AMO_JWT_ISSUER" --api-secret "$AMO_JWT_SECRET"
 ```
+
+## License
+
+[Apache License 2.0](LICENSE).

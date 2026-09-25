@@ -37,8 +37,7 @@ up, shown on the forum's own stylesheet.
 **Category:** Chrome: *Make Chrome Yours › Functionality & UI*. AMO: *Appearance*, plus *Social &
 Communication* if it allows a second.
 
-**Homepage:** https://github.com/MikeEnRegalia/enhance-pa (if the repository is public; otherwise leave it
-empty)
+**Homepage:** https://github.com/MikeEnRegalia/enhance-pa
 
 **Support email:** the one the developer account is registered with.
 
@@ -70,3 +69,4 @@ Chrome calls this *Test instructions*, AMO *Notes to Reviewer*.
 > beside the links at the top.
 >
 > The one script is shipped as written: nothing is minified, bundled or loaded from elsewhere.
+> The source is at https://github.com/MikeEnRegalia/enhance-pa, under the Apache License 2.0.
