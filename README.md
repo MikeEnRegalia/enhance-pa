@@ -62,6 +62,11 @@ When the forum's markup changes, update them from a saved page rather than from 
 Bump `version` in `manifest.json` and `@version` in the script before every upload; neither store takes the
 same version twice. `npm run build` leaves the tests, the store material and the README out of the zip.
 
+Publishing a GitHub release builds the zip and attaches it to the release
+([`.github/workflows/release.yml`](.github/workflows/release.yml)). Tag the release with the version
+(`v1.1` or `1.1` for `"version": "1.1"`); the workflow stops before building if the tag, the manifest and the
+script's `@version` disagree, and runs the tests and web-ext's checks first.
+
 `store/listing.md` has the text for every field both stores ask for, and `store/screenshots/` the
 screenshots, all 1280×800.
 

@@ -1,0 +1,52 @@
+# Builds the extension's zip when a release is published and attaches it to the release, ready to upload
+# to the Chrome Web Store and addons.mozilla.org.
+#
+# The release's tag must name the version the manifest carries (1.1 or v1.1 for "version": "1.1"), and the
+# script's @version must match it too: neither store takes the same version twice, so a zip whose version
+# was not bumped is refused here rather than at upload.
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Check the versions against the tag
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          manifest=$(node -p "require('./manifest.json').version")
+          script=$(sed -n 's|^// @version *||p' scripts/forum-style.user.js)
+          echo "tag $TAG, manifest $manifest, script $script"
+          if [ "${TAG#v}" != "$manifest" ]; then
+            echo "::error::The tag $TAG does not match the manifest's version $manifest"
+            exit 1
+          fi
+          if [ "$script" != "$manifest" ]; then
+            echo "::error::The script's @version $script does not match the manifest's version $manifest"
+            exit 1
+          fi
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run lint
+      - run: npm run build
+
+      - name: Attach the zip to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$TAG" dist/*.zip --clobber
