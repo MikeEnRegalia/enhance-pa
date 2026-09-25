@@ -1,5 +1,11 @@
-# Builds the extension's zip when a release is published and attaches it to the release, ready to upload
-# to the Chrome Web Store and addons.mozilla.org.
+# Builds the extension's zip and attaches it to a release, ready to upload to the Chrome Web Store and
+# addons.mozilla.org. Two ways in:
+#
+#  * publish a release on GitHub, and the zip is attached to it;
+#  * push a tag named v<version>, and the release is created from it (the annotated tag's message becomes its
+#    notes), then the zip attached.
+#
+# A release this workflow creates starts no second run: GitHub fires no events for what github.token does.
 #
 # The release's tag must name the version the manifest carries (1.1 or v1.1 for "version": "1.1"), and the
 # script's @version must match it too: neither store takes the same version twice, so a zip whose version
@@ -9,13 +15,22 @@ name: Release
 on:
   release:
     types: [published]
+  push:
+    tags: ['v*']
 
 permissions:
   contents: write
 
+# a release published in the UI with a new tag also pushes that tag: the two runs take turns, and the
+# second finds the release there and only replaces the zip
+concurrency:
+  group: release-${{ github.event.release.tag_name || github.ref_name }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event.release.tag_name || github.ref_name }}
     steps:
       - uses: actions/checkout@v5
 
@@ -25,8 +40,6 @@ jobs:
           cache: npm
 
       - name: Check the versions against the tag
-        env:
-          TAG: ${{ github.event.release.tag_name }}
         run: |
           manifest=$(node -p "require('./manifest.json').version")
           script=$(sed -n 's|^// @version *||p' scripts/forum-style.user.js)
@@ -45,8 +58,21 @@ jobs:
       - run: npm run lint
       - run: npm run build
 
+      - name: Create the release from the tag, unless it exists
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "The release $TAG already exists"
+            exit 0
+          fi
+          # the checkout holds the tagged commit, not necessarily the annotated tag carrying the notes
+          git fetch --no-tags origin "+refs/tags/$TAG:refs/tags/$TAG"
+          git tag -l --format='%(contents)' "$TAG" > notes.md
+          gh release create "$TAG" --verify-tag --title "$TAG" --notes-file notes.md
+
       - name: Attach the zip to the release
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ github.event.release.tag_name }}
         run: gh release upload "$TAG" dist/*.zip --clobber
