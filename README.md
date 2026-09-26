@@ -1,7 +1,7 @@
 # Enhance ProgArchives Forum
 
 A browser extension that gives the [ProgArchives.com](https://www.progarchives.com) forum a dark mode and a
-more readable style. It needs no account, asks for no permissions and sends nothing anywhere.
+more readable style. It needs no account, asks for no permissions and sends nothing anywhere ([privacy policy](PRIVACY.md)).
 
 It is unofficial: not made by or affiliated with ProgArchives.
 
@@ -26,9 +26,11 @@ It is unofficial: not made by or affiliated with ProgArchives.
   from a checkout: `chrome://extensions`, turn on *Developer mode*, *Load unpacked* and pick this directory.
 - **Firefox:** from addons.mozilla.org *(link once published)*. Or `about:debugging#/runtime/this-firefox`,
   *Load Temporary Add-on* and pick `manifest.json` (it lasts until Firefox restarts).
-- **Safari or anything else with a userscript manager** (Userscripts, Tampermonkey, Violentmonkey):
-  install [`scripts/forum-style.user.js`](scripts/forum-style.user.js) as a userscript. It is the same file
-  the extension runs.
+- **Safari on iPhone, iPad and Mac:** from the App Store *(link once published)*, then open the app for the
+  steps that turn the extension on. To build it yourself, see [`safari/`](safari/README.md).
+- **Anything else with a userscript manager** (Userscripts, Tampermonkey, Violentmonkey): install
+  [`scripts/forum-style.user.js`](scripts/forum-style.user.js) as a userscript. It is the same file the
+  extension runs.
 
 ## How it works
 
@@ -96,9 +98,15 @@ screenshots, all 1280×800.
 Firefox also takes uploads from the command line, with API credentials from the Developer Hub:
 
 ```sh
-npx web-ext sign --ignore-files test store 'icons/*.svg' README.md package.json package-lock.json \
+npx web-ext sign --ignore-files test store safari PRIVACY.md 'icons/*.svg' README.md package.json package-lock.json \
   --channel listed --api-key "$AMO_JWT_ISSUER" --api-secret "$AMO_JWT_SECRET"
 ```
+
+### App Store (Safari)
+
+See [`safari/README.md`](safari/README.md): the app is built and uploaded from Xcode on a Mac, and
+`safari/AppStore/` holds its listing and screenshots. Keep its `MARKETING_VERSION` equal to the manifest's
+version.
 
 ## License
 

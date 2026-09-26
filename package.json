@@ -6,8 +6,8 @@
   "description": "A dark mode and a more readable style for the ProgArchives.com forum, as a browser extension",
   "scripts": {
     "test": "node --test test/*.test.mjs",
-    "lint": "web-ext lint --ignore-files test store 'icons/*.svg' README.md package.json package-lock.json",
-    "build": "web-ext build --ignore-files test store 'icons/*.svg' README.md package.json package-lock.json --artifacts-dir dist --overwrite-dest"
+    "lint": "web-ext lint --ignore-files test store safari PRIVACY.md 'icons/*.svg' README.md package.json package-lock.json",
+    "build": "web-ext build --ignore-files test store safari PRIVACY.md 'icons/*.svg' README.md package.json package-lock.json --artifacts-dir dist --overwrite-dest"
   },
   "devDependencies": {
     "jsdom": "^27.0.0",
