@@ -1,0 +1,118 @@
+# The Safari version of the extension: Safari takes a web extension only inside an app, so this is a small app
+# for iPhone, iPad and Mac whose one job is to carry the extension and tell people how to turn it on.
+#
+# The extension itself is not copied in: both extension targets bundle the repository's own manifest.json,
+# scripts/ and icons/, so Safari runs exactly what Chrome and Firefox run.
+#
+#   brew install xcodegen      # once
+#   cd safari && xcodegen generate && open EnhanceProgArchivesForum.xcodeproj
+#
+# The iOS and macOS apps share one bundle identifier, which makes them one App Store product ("universal
+# purchase") under a single App Store Connect record. See safari/README.md.
+name: EnhanceProgArchivesForum
+options:
+  bundleIdPrefix: com.mikeenregalia
+  deploymentTarget:
+    iOS: "16.0"
+    macOS: "13.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    # MARKETING_VERSION follows manifest.json's version; CURRENT_PROJECT_VERSION goes up with every upload
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "5.0"
+    DEVELOPMENT_TEAM: "3YUZT857NK"
+    CODE_SIGN_STYLE: Automatic
+    CODE_SIGN_IDENTITY: "Apple Development"
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    GENERATE_INFOPLIST_FILE: YES
+    INFOPLIST_KEY_NSHumanReadableCopyright: "Apache License 2.0. Not affiliated with ProgArchives."
+
+targets:
+  App-iOS:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+    dependencies:
+      - target: Extension-iOS
+    scheme: {}
+    settings:
+      base:
+        PRODUCT_NAME: Enhance ProgArchives Forum
+        PRODUCT_MODULE_NAME: EnhanceProgArchivesForum
+        PRODUCT_BUNDLE_IDENTIFIER: com.mikeenregalia.enhance-pa-forum
+        INFOPLIST_FILE: App/Info.plist
+        INFOPLIST_KEY_CFBundleDisplayName: PA Forum
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.utilities
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: UIInterfaceOrientationPortrait
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SUPPORTS_MACCATALYST: NO
+
+  Extension-iOS:
+    type: app-extension
+    platform: iOS
+    sources: &extensionSources
+      - path: Extension
+      # the web extension itself, straight from the repository root
+      - path: ../manifest.json
+        buildPhase: resources
+      - path: ../scripts
+        type: folder
+      - path: ../icons
+        type: folder
+    settings:
+      base:
+        PRODUCT_NAME: Enhance ProgArchives Forum Extension
+        PRODUCT_MODULE_NAME: EnhanceProgArchivesForumExtension
+        PRODUCT_BUNDLE_IDENTIFIER: com.mikeenregalia.enhance-pa-forum.extension
+        INFOPLIST_FILE: Extension/Info.plist
+        INFOPLIST_KEY_CFBundleDisplayName: Enhance ProgArchives Forum
+        SKIP_INSTALL: YES
+
+  App-macOS:
+    type: application
+    platform: macOS
+    sources:
+      - path: App
+    dependencies:
+      - target: Extension-macOS
+    scheme: {}
+    entitlements:
+      path: App/App-macOS.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+    settings:
+      base:
+        PRODUCT_NAME: Enhance ProgArchives Forum
+        PRODUCT_MODULE_NAME: EnhanceProgArchivesForum
+        PRODUCT_BUNDLE_IDENTIFIER: com.mikeenregalia.enhance-pa-forum
+        INFOPLIST_FILE: App/Info.plist
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.utilities
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ENABLE_HARDENED_RUNTIME: YES
+        # read by the app to find its extension in Safari's settings
+        EXTENSION_BUNDLE_IDENTIFIER: com.mikeenregalia.enhance-pa-forum.extension
+
+  Extension-macOS:
+    type: app-extension
+    platform: macOS
+    sources: *extensionSources
+    entitlements:
+      path: Extension/Extension-macOS.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+    settings:
+      base:
+        PRODUCT_NAME: Enhance ProgArchives Forum Extension
+        PRODUCT_MODULE_NAME: EnhanceProgArchivesForumExtension
+        PRODUCT_BUNDLE_IDENTIFIER: com.mikeenregalia.enhance-pa-forum.extension
+        INFOPLIST_FILE: Extension/Info.plist
+        INFOPLIST_KEY_CFBundleDisplayName: Enhance ProgArchives Forum
+        ENABLE_HARDENED_RUNTIME: YES
+        SKIP_INSTALL: YES
