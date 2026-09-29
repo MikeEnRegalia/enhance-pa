@@ -22,8 +22,10 @@ It is unofficial: not made by or affiliated with ProgArchives.
 
 ## Installing
 
-- **Chrome, Edge and other Chromium browsers:** from the Chrome Web Store *(link once published)*. Or,
-  from a checkout: `chrome://extensions`, turn on *Developer mode*, *Load unpacked* and pick this directory.
+- **Edge:** from Microsoft Edge Add-ons *(link once published)*.
+- **Chrome and other Chromium browsers:** from the Chrome Web Store *(link once published)*. Or, from a
+  checkout: `chrome://extensions` (`edge://extensions` in Edge), turn on *Developer mode*, *Load unpacked* and
+  pick this directory.
 - **Firefox:** from addons.mozilla.org *(link once published)*. Or `about:debugging#/runtime/this-firefox`,
   *Load Temporary Add-on* and pick `manifest.json` (it lasts until Firefox restarts).
 - **Safari on iPhone, iPad and Mac:** from the App Store *(link once published)*, then open the app for the
@@ -61,11 +63,11 @@ When the forum's markup changes, update them from a saved page rather than from 
 
 ## Publishing
 
-Bump `version` in `manifest.json` and `@version` in the script before every upload; neither store takes the
+Bump `version` in `manifest.json` and `@version` in the script before every upload; no store takes the
 same version twice. `npm run build` leaves the tests, the store material and the README out of the zip.
 
 Releases are built by [`.github/workflows/release.yml`](.github/workflows/release.yml), which runs the
-tests and web-ext's checks, builds the zip and attaches it to the release. Either publish a release on GitHub,
+tests and web-ext's checks, builds the zip, attaches it to the release and submits it to Edge Add-ons. Either publish a release on GitHub,
 tagged with the version (`v1.1` or `1.1` for `"version": "1.1"`), or push an annotated tag and let the
 workflow create the release, with the tag's message as its notes:
 
@@ -76,7 +78,7 @@ git push origin v1.1
 
 The workflow stops before building if the tag, the manifest and the script's `@version` disagree.
 
-`store/listing.md` has the text for every field both stores ask for, and `store/screenshots/` the
+`store/listing.md` has the text for every field the stores ask for, and `store/screenshots/` the
 screenshots, all 1280×800.
 
 ### Chrome Web Store
@@ -86,6 +88,25 @@ screenshots, all 1280×800.
 3. Fill in the listing and the *Privacy* tab from `store/listing.md`. The extension collects no data, so it
    needs no privacy policy.
 4. Submit for review, as *Public* or *Unlisted*.
+
+### Microsoft Edge Add-ons
+
+1. Register in [Partner Center](https://partner.microsoft.com/dashboard/microsoftedge/overview) (free).
+2. *Create new extension* and upload the zip from `dist/`: the same one the other stores take.
+3. Fill in *Availability*, *Properties* and the *Store listing* from `store/listing.md`, with
+   `icons/icon-128.png` as the logo, and submit.
+
+That first version is submitted by hand. After it, the release workflow submits each new one through the
+Edge Add-ons API. To turn that on, in Partner Center:
+
+1. *Microsoft Edge › Publish API*, *Create API credentials*.
+2. In the repository's *Settings › Secrets and variables › Actions*, add the secrets `EDGE_CLIENT_ID` (the
+   Client ID) and `EDGE_API_KEY` (the API key), and the variable `EDGE_PRODUCT_ID` (the Product ID on the
+   extension's overview page).
+
+Until they are set, the workflow skips Edge with a warning. The API key expires (Partner Center shows when);
+renew it there and replace the secret. The API only replaces the package: changes to the listing are still
+made in Partner Center.
 
 ### Firefox Add-ons
 

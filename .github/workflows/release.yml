@@ -1,5 +1,5 @@
 # Builds the extension's zip and attaches it to a release, ready to upload to the Chrome Web Store and
-# addons.mozilla.org. Two ways in:
+# addons.mozilla.org, and submits it to Microsoft Edge Add-ons. Two ways in:
 #
 #  * publish a release on GitHub, and the zip is attached to it;
 #  * push a tag named v<version>, and the release is created from it (the annotated tag's message becomes its
@@ -10,6 +10,10 @@
 # The release's tag must name the version the manifest carries (1.1 or v1.1 for "version": "1.1"), and the
 # script's @version must match it too: neither store takes the same version twice, so a zip whose version
 # was not bumped is refused here rather than at upload.
+#
+# The Edge submission needs the product ID from Partner Center (the variable EDGE_PRODUCT_ID) and the Publish
+# API's credentials (the secrets EDGE_CLIENT_ID and EDGE_API_KEY); without them, the step is skipped. The
+# first version has to be submitted in Partner Center by hand: the API only updates an existing product.
 name: Release
 
 on:
@@ -59,6 +63,7 @@ jobs:
       - run: npm run build
 
       - name: Create the release from the tag, unless it exists
+        id: release
         if: github.event_name == 'push'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -67,6 +72,7 @@ jobs:
             echo "The release $TAG already exists"
             exit 0
           fi
+          echo "created=true" >> "$GITHUB_OUTPUT"
           # the checkout holds the tagged commit, not necessarily the annotated tag carrying the notes
           git fetch --no-tags origin "+refs/tags/$TAG:refs/tags/$TAG"
           git tag -l --format='%(contents)' "$TAG" > notes.md
@@ -76,3 +82,51 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release upload "$TAG" dist/*.zip --clobber
+
+      # a release published in the UI runs this workflow twice (see concurrency above): the run for the
+      # release submits, and the run for its tag, finding the release already there, does not
+      - name: Submit to Microsoft Edge Add-ons
+        if: github.event_name == 'release' || steps.release.outputs.created == 'true'
+        env:
+          PRODUCT_ID: ${{ vars.EDGE_PRODUCT_ID }}
+          CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
+          API_KEY: ${{ secrets.EDGE_API_KEY }}
+          API: https://api.addons.microsoftedge.microsoft.com/v1/products/${{ vars.EDGE_PRODUCT_ID }}/submissions
+        run: |
+          if [ -z "$PRODUCT_ID" ] || [ -z "$CLIENT_ID" ] || [ -z "$API_KEY" ]; then
+            echo "::warning::EDGE_PRODUCT_ID, EDGE_CLIENT_ID or EDGE_API_KEY is not set: not submitting to Edge"
+            exit 0
+          fi
+          auth=(-H "Authorization: ApiKey $API_KEY" -H "X-ClientID: $CLIENT_ID")
+
+          # both calls answer 202 with the operation's ID in the Location header; wait for it to finish
+          operation() {
+            if ! curl -sS --fail-with-body -o body.txt -D headers.txt "${auth[@]}" "$@"; then
+              echo "::error::$(cat body.txt)" >&2
+              return 1
+            fi
+            tr -d '\r' < headers.txt | sed -n 's|^[Ll]ocation: *||p' | sed 's|.*/||'
+          }
+          wait_for() {
+            for _ in $(seq 60); do
+              sleep 10
+              if ! curl -sS --fail-with-body -o status.json "${auth[@]}" "$1"; then
+                echo "::error::$2: $(cat status.json)"
+                exit 1
+              fi
+              status=$(jq -r .status status.json)
+              [ "$status" = InProgress ] || break
+            done
+            if [ "$status" != Succeeded ]; then
+              echo "::error::$2: $(jq -c . status.json)"
+              exit 1
+            fi
+          }
+
+          id=$(operation -X POST -H "Content-Type: application/zip" -T dist/*.zip "$API/draft/package") || exit 1
+          wait_for "$API/draft/package/operations/$id" "The upload failed"
+
+          notes=$(jq -n --arg tag "$TAG" '{notes: "Version \($tag). The source is at https://github.com/MikeEnRegalia/enhance-pa"}')
+          id=$(operation -X POST -H "Content-Type: application/json" -d "$notes" "$API") || exit 1
+          wait_for "$API/operations/$id" "The submission failed"
+          echo "Submitted $TAG to Microsoft Edge Add-ons for review"

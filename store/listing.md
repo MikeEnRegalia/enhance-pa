@@ -1,10 +1,11 @@
 # Store listing: Enhance ProgArchives Forum
 
-What to paste into the Chrome Web Store dashboard and the addons.mozilla.org Developer Hub, field by field.
+What to paste into the Chrome Web Store dashboard, the addons.mozilla.org Developer Hub and Microsoft Partner
+Center (Edge Add-ons), field by field.
 The screenshots are in `screenshots/`, all 1280×800, in the order to upload them. The thread in them is made
 up, shown on the forum's own stylesheet.
 
-## Both stores
+## Every store
 
 **Name:** Enhance ProgArchives Forum
 
@@ -35,11 +36,18 @@ up, shown on the forum's own stylesheet.
 > Enhance ProgArchives Forum is not made by or affiliated with ProgArchives.
 
 **Category:** Chrome: *Make Chrome Yours › Functionality & UI*. AMO: *Appearance*, plus *Social &
-Communication* if it allows a second.
+Communication* if it allows a second. Edge: *Accessibility*.
 
 **Homepage:** https://github.com/MikeEnRegalia/enhance-pa
 
 **Support email:** the one the developer account is registered with.
+
+## Edge Add-ons: Properties
+
+**Privacy policy:** not required, as the extension collects no personal data, but it can be given:
+https://github.com/MikeEnRegalia/enhance-pa/blob/main/PRIVACY.md
+
+**Website:** the homepage above.
 
 ## Chrome Web Store: the Privacy tab
 
@@ -60,7 +68,7 @@ collected, no privacy policy is needed.
 
 ## Notes for the reviewers
 
-Chrome calls this *Test instructions*, AMO *Notes to Reviewer*.
+Chrome calls this *Test instructions*, AMO *Notes to Reviewer*, Edge *Notes for certification*.
 
 > No account is needed. Open any forum thread, for example
 > https://www.progarchives.com/forum/forum_posts.asp?TID=137744. The theme follows the system setting, and the
