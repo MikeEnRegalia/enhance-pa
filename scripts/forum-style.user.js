@@ -284,6 +284,37 @@
       border: 1px solid var(--pa-line) !important;
       border-radius: 3px;
     }
+    /* the colours above take away the native button's hover, press and disabled looks, and with them the only
+       sign a post is on its way: the forum disables Submit once it is clicked -- so they are drawn back here */
+    html[data-enhance-pa-theme=dark] input[type=submit]:hover:not(:disabled),
+    html[data-enhance-pa-theme=dark] input[type=button]:hover:not(:disabled),
+    html[data-enhance-pa-theme=dark] input[type=reset]:hover:not(:disabled),
+    html[data-enhance-pa-theme=dark] button:hover:not(:disabled) {
+      background: var(--pa-ledger) !important;
+      color: #fff !important;
+      cursor: pointer;
+    }
+    html[data-enhance-pa-theme=dark] input[type=submit]:active:not(:disabled),
+    html[data-enhance-pa-theme=dark] input[type=button]:active:not(:disabled),
+    html[data-enhance-pa-theme=dark] input[type=reset]:active:not(:disabled),
+    html[data-enhance-pa-theme=dark] button:active:not(:disabled) {
+      background: var(--pa-line) !important;
+      color: #fff !important;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, .5) !important;
+    }
+    html[data-enhance-pa-theme=dark] input[type=submit]:disabled,
+    html[data-enhance-pa-theme=dark] input[type=button]:disabled,
+    html[data-enhance-pa-theme=dark] input[type=reset]:disabled,
+    html[data-enhance-pa-theme=dark] button:disabled {
+      background: var(--pa-bg) !important;
+      color: var(--pa-muted) !important;
+      opacity: .6;
+      cursor: default;
+    }
+    html[data-enhance-pa-theme=dark] input[type=submit]:focus-visible,
+    html[data-enhance-pa-theme=dark] input[type=button]:focus-visible,
+    html[data-enhance-pa-theme=dark] input[type=reset]:focus-visible,
+    html[data-enhance-pa-theme=dark] button:focus-visible { outline: 2px solid var(--pa-link) !important; outline-offset: 1px; }
     html[data-enhance-pa-theme=dark] .RTEtoolbar, html[data-enhance-pa-theme=dark] .WebWizRTEbuttonOver { background-color: var(--pa-raised) !important; }
     html[data-enhance-pa-theme=dark] .RTEmouseOver { background-color: var(--pa-ledger) !important; color: #fff !important; }
 

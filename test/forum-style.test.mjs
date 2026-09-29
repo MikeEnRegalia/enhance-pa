@@ -160,3 +160,13 @@ test('no viewport is added: the mobile doctype already has browsers lay the page
     assert.equal(page.document.querySelectorAll('meta[name="viewport"]').length, 0)
   }
 })
+
+test('on dark, a submit button shows it has been clicked: the forum disables it while the post goes', async () => {
+  const page = await load({ stored: 'dark' })
+  const submit = page.document.getElementById('Submit')
+  const before = page.window.getComputedStyle(submit)
+  const [background, color] = [before.backgroundColor, before.color]
+  submit.disabled = true
+  const after = page.window.getComputedStyle(submit)
+  assert.ok(after.backgroundColor !== background || after.color !== color, 'a disabled button looks different')
+})
